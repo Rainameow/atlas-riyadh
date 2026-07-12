@@ -1,0 +1,41 @@
+# Atlas service topology.
+#
+# Milestone 0 defines the data services (PostGIS + Redis) so they are available
+# for local development. The `api` and `frontend` services are wired in at
+# Milestones 4 and 5 respectively; their build contexts already exist.
+services:
+  postgres:
+    image: postgis/postgis:16-3.4
+    container_name: atlas-postgres
+    environment:
+      POSTGRES_USER: ${ATLAS_DB_USER:-atlas}
+      POSTGRES_PASSWORD: ${ATLAS_DB_PASSWORD:-atlas}
+      POSTGRES_DB: ${ATLAS_DB_NAME:-atlas}
+    ports:
+      - "5432:5432"
+    volumes:
+      - atlas-pgdata:/var/lib/postgresql/data
+      - ./backend/database/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${ATLAS_DB_USER:-atlas} -d ${ATLAS_DB_NAME:-atlas}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    container_name: atlas-redis
+    command: ["redis-server", "--appendonly", "yes"]
+    ports:
+      - "6379:6379"
+    volumes:
+      - atlas-redisdata:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  atlas-pgdata:
+  atlas-redisdata:

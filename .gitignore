@@ -1,0 +1,36 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+venv/
+.env
+
+# Testing / typing / linting caches
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+coverage.xml
+
+# OSM / geodata cache (downloaded at runtime, not committed)
+backend/data/cache/*
+!backend/data/cache/.gitkeep
+# OSMnx raw HTTP response cache
+backend/cache/
+backend/data/osmnx_cache/
+
+# Node / frontend
+node_modules/
+frontend/dist/
+frontend/.vite/
+
+# Editors / OS
+.DS_Store
+.idea/
+.vscode/
+*.swp
