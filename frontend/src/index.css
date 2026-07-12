@@ -5,16 +5,21 @@ body,
 #root {
   height: 100%;
   margin: 0;
-  background: #0b0f19;
-  color: #e2e8f0;
+  background: #f1f5f9;
+  color: #0f172a;
   font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  -webkit-font-smoothing: antialiased;
 }
 
-/* MapLibre attribution styling to fit the dark theme. */
+/* MapLibre attribution + controls tuned for the light theme. */
 .maplibregl-ctrl-attrib {
-  background: rgba(11, 15, 25, 0.7) !important;
-  color: #94a3b8 !important;
+  background: rgba(255, 255, 255, 0.75) !important;
+  color: #64748b !important;
 }
 .maplibregl-ctrl-attrib a {
-  color: #cbd5e1 !important;
+  color: #475569 !important;
+}
+.maplibregl-ctrl-group {
+  border-radius: 10px !important;
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.12) !important;
 }

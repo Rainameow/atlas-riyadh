@@ -12,21 +12,26 @@ export function useSimulationSocket() {
   const socketRef = useRef<WebSocket | null>(null);
 
   useEffect(() => {
-    let closed = false;
+    // `disposed` guards against a socket whose effect was already cleaned up
+    // (e.g. React StrictMode's double-mount) mutating state after the fact.
+    let disposed = false;
     let retry = 500;
     let timer: ReturnType<typeof setTimeout>;
 
     const connect = () => {
+      if (disposed) return;
       const proto = window.location.protocol === "https:" ? "wss" : "ws";
       const ws = new WebSocket(`${proto}://${window.location.host}/ws/stream`);
       socketRef.current = ws;
       setStatus("connecting");
 
       ws.onopen = () => {
+        if (disposed) return;
         retry = 500;
         setStatus("open");
       };
       ws.onmessage = (event) => {
+        if (disposed) return;
         try {
           setTick(JSON.parse(event.data) as TickMessage);
         } catch {
@@ -34,18 +39,17 @@ export function useSimulationSocket() {
         }
       };
       ws.onclose = () => {
+        if (disposed) return; // stale socket from a cleaned-up effect
         setStatus("closed");
-        if (!closed) {
-          timer = setTimeout(connect, retry);
-          retry = Math.min(retry * 2, 5000);
-        }
+        timer = setTimeout(connect, retry);
+        retry = Math.min(retry * 2, 5000);
       };
       ws.onerror = () => ws.close();
     };
 
     connect();
     return () => {
-      closed = true;
+      disposed = true;
       clearTimeout(timer);
       socketRef.current?.close();
     };

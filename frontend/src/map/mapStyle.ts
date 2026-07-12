@@ -1,16 +1,16 @@
 import type { StyleSpecification } from "maplibre-gl";
 
-// A self-contained dark raster basemap using CARTO's free tiles — no API key
-// required, which keeps local development friction-free.
-export const DARK_STYLE: StyleSpecification = {
+// A clean, light basemap using CARTO's free Positron tiles — minimal greys and
+// whites so the coloured citizen dots read clearly. No API key required.
+export const LIGHT_STYLE: StyleSpecification = {
   version: 8,
   sources: {
     carto: {
       type: "raster",
       tiles: [
-        "https://a.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png",
-        "https://b.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png",
-        "https://c.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png",
+        "https://a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png",
+        "https://b.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png",
+        "https://c.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png",
       ],
       tileSize: 256,
       attribution:
@@ -18,7 +18,7 @@ export const DARK_STYLE: StyleSpecification = {
     },
   },
   layers: [
-    { id: "background", type: "background", paint: { "background-color": "#0b0f19" } },
+    { id: "background", type: "background", paint: { "background-color": "#f8fafc" } },
     { id: "carto", type: "raster", source: "carto" },
   ],
 };
