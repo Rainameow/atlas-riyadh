@@ -38,28 +38,39 @@ docker-compose.yml
 python3.13 -m venv .venv && source .venv/bin/activate
 pip install -e "backend/[dev]"
 
-# 2. Data services (PostGIS + Redis) — needed from Milestone 3 onward
-docker compose up -d postgres redis
+# 2. Download & cache the real Riyadh OSM data (first run only, ~50s)
+cd backend && python -m atlas_core.city.ingest && cd ..
 
-# 3. Copy environment defaults
-cp .env.example .env
-
-# 4. Quality gate
+# 3. Backend quality gate
 cd backend
-pytest            # tests
-ruff check .      # lint
-black --check .   # format
-mypy atlas_core   # types
+pytest              # 84 tests (add --run-slow for live OSM/API tests)
+ruff check .        # lint
+black --check .     # format
+mypy atlas_core api # types
+cd ..
 ```
+
+### Run the live map locally
+
+```bash
+# Terminal 1 — API + WebSocket (loads the cached city, starts simulating)
+cd backend && ../.venv/bin/uvicorn api.main:app --port 8000
+
+# Terminal 2 — the map UI
+cd frontend && npm install && npm run dev
+```
+
+Then open **http://localhost:5173** — a live map of Riyadh with citizens moving
+along real roads, colored by activity, plus weather/event controls and metrics.
 
 ## Status
 
 | Milestone | Scope | State |
 |-----------|-------|-------|
 | M0 | Foundation, tooling, config, logging, compose skeleton | ✅ Done |
-| M1 | City data layer (OSMnx ingest + cache) | ⏳ Next |
-| M2 | Simulation core (agents, routing, weather, events) | ◻️ |
-| M3 | Persistence (PostGIS + Redis) | ◻️ |
-| M4 | API (FastAPI REST + WebSocket) | ◻️ |
-| M5 | Frontend (React + MapLibre) | ◻️ |
-| M6 | Scale & polish | ◻️ |
+| M1 | City data layer (OSMnx ingest + cache) | ✅ Done |
+| M2 | Simulation core (agents, routing, weather, events) | ✅ Done |
+| M4 | API (FastAPI REST + WebSocket streaming) | ✅ Done |
+| M5 | Frontend (React + TS + MapLibre live map) | ✅ Done |
+| M3 | Persistence (PostGIS + Redis) | ⏳ Deferred |
+| M6 | Scale, CI, deployment & polish | ◻️ |

@@ -1,0 +1,1 @@
+{"root":["./src/app.tsx","./src/main.tsx","./src/theme.ts","./src/types.ts","./src/api/client.ts","./src/hooks/usesimulationsocket.ts","./src/map/mapview.tsx","./src/map/mapstyle.ts","./src/panels/controlpanel.tsx","./src/panels/metricspanel.tsx"],"version":"5.9.3"}
