@@ -1,14 +1,20 @@
 # Atlas
 
-Atlas is an AI-powered digital twin platform that simulates real cities. The
+Atlas is an agent-based digital twin platform that simulates real cities. The
 first supported city is **Riyadh, Saudi Arabia**.
 
 Atlas models a living city — citizens, buildings, roads, traffic, weather,
 events, businesses, and public transport — on top of **real OpenStreetMap
-data**. Citizens are autonomous agents that move along the actual road network
-via shortest paths (never in straight lines), following daily routines that
-respond to weather and city events. The city evolves continuously over time and
-streams live to an interactive map.
+data**. Each citizen is an autonomous, rule-based agent that moves along the
+actual road network via shortest paths (never in straight lines), following a
+daily routine driven by a behaviour state machine that responds to weather and
+city events. The city evolves continuously over time and streams live to an
+interactive map.
+
+> **Note on scope:** the agents are governed by deterministic, rule-based logic
+> (a schedule/behaviour state machine over real geospatial data) — not machine
+> learning or an LLM. Atlas is an agent-based simulation, and the modular design
+> leaves room to add learned decision models later.
 
 ## Tech stack
 

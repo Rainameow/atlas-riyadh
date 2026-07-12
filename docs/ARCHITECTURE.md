@@ -1,9 +1,14 @@
 # Atlas — Architecture
 
-Atlas is an AI-powered digital twin platform that simulates real cities. The
+Atlas is an agent-based digital twin platform that simulates real cities. The
 first supported city is Riyadh, Saudi Arabia. This document describes the
 system design, the layer boundaries, and the mapping from the requested project
 structure to the implemented monorepo.
+
+The simulation is driven by deterministic, rule-based autonomous agents (a
+behaviour state machine over real geospatial data), not machine learning or an
+LLM. The layered design keeps the engine independent so learned decision models
+could be introduced later without touching the API, persistence, or transport.
 
 ## Layered design
 
