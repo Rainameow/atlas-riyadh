@@ -4,8 +4,13 @@ from __future__ import annotations
 
 import networkx as nx
 import pytest
+from atlas_core.city.categories import BuildingCategory, PoiCategory
+from atlas_core.city.model import CityModel
 from atlas_core.city.network import RoadNetwork
+from atlas_core.city.types import Building, LatLon, Poi
 from atlas_core.config.settings import Settings, get_settings
+from atlas_core.simulation.agents.citizen import Citizen
+from atlas_core.simulation.types import Destination, Occupation, TransportMode
 from shapely.geometry import LineString
 
 
@@ -73,3 +78,63 @@ def grid_graph() -> nx.MultiDiGraph:
 def grid_network(grid_graph: nx.MultiDiGraph) -> RoadNetwork:
     """A :class:`RoadNetwork` over the synthetic grid graph."""
     return RoadNetwork(grid_graph)
+
+
+@pytest.fixture
+def sample_city(grid_network: RoadNetwork) -> CityModel:
+    """A tiny but complete city: the grid network plus buildings and POIs.
+
+    Every POI category the behaviour layer needs is present and pinned to a real
+    grid node, so the simulation can run end-to-end without any OSM download.
+    """
+
+    def coords(node: int):
+        return grid_network.node_coords(node)
+
+    buildings = [
+        Building(1, BuildingCategory.RESIDENTIAL, coords(1), 1, 200.0, "Home North"),
+        Building(2, BuildingCategory.RESIDENTIAL, coords(4), 4, 180.0, "Home South"),
+        Building(3, BuildingCategory.OFFICE, coords(3), 3, 500.0, "Tower"),
+    ]
+    pois = [
+        Poi(10, PoiCategory.MOSQUE, coords(2), 2, "Grand Mosque"),
+        Poi(11, PoiCategory.MALL, coords(4), 4, "Riyadh Mall"),
+        Poi(12, PoiCategory.PARK, coords(1), 1, "City Park"),
+        Poi(13, PoiCategory.GYM, coords(2), 2, "Fit Gym"),
+        Poi(14, PoiCategory.RESTAURANT, coords(3), 3, "Najd Kitchen"),
+        Poi(15, PoiCategory.CAFE, coords(4), 4, "Corner Cafe"),
+        Poi(16, PoiCategory.HOSPITAL, coords(1), 1, "Central Hospital"),
+        Poi(17, PoiCategory.UNIVERSITY, coords(3), 3, "KSU"),
+        Poi(18, PoiCategory.SCHOOL, coords(2), 2, "Al Noor School"),
+    ]
+    return CityModel(name="TestCity", network=grid_network, buildings=buildings, pois=pois)
+
+
+@pytest.fixture
+def make_citizen():
+    """Return a builder for a single citizen with sensible defaults."""
+
+    def _build(
+        *,
+        occupation: Occupation = Occupation.OFFICE_WORKER,
+        prayer_propensity: float = 0.9,
+        has_workplace: bool = True,
+        transport: TransportMode = TransportMode.CAR,
+    ) -> Citizen:
+        home = Destination(LatLon(24.700, 46.600), node=1, label="home")
+        workplace = (
+            Destination(LatLon(24.710, 46.610), node=3, label="work") if has_workplace else None
+        )
+        return Citizen(
+            id=0,
+            age=30,
+            occupation=occupation,
+            home=home,
+            workplace=workplace,
+            preferred_transport=transport,
+            position=home.location,
+            current_node=1,
+            prayer_propensity=prayer_propensity,
+        )
+
+    return _build
